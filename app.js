@@ -18,6 +18,14 @@ app.use((req, res, next) => {
 
 app.use('/feed', feedRoutes);
 
+// error handler (after all routes)
+app.use((error, req, res, next) => {
+  console.log(error);
+  const statusCode = error.statusCode || 500;
+  const message = error.message;
+  res.status(statusCode).json({ message: message });
+})
+
 mongoose.connect('mongodb+srv://Canxiu:Fyjcax-8betqo-bysvoz@cluster0-s9ho8.mongodb.net/messages?retryWrites=true&w=majority')
   .then(result => {
     app.listen(8080);

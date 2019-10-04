@@ -19,7 +19,9 @@ exports.getPosts = (req, res, next) => {
 exports.createPost = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ message: 'Validation failed. Entered data is incorrect.' });
+    const error = new Error('Validation failed. Entered data is incorrect.');
+    error.statusCode = 422;
+    throw error;
   }
 
   const title = req.body.title;
@@ -40,5 +42,10 @@ exports.createPost = (req, res, next) => {
         post: result
       });
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      if(!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    })
 }
