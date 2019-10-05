@@ -24,7 +24,13 @@ exports.createPost = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+  if(!req.file) {
+    const error = new Error('No image is provided.');
+    error.statusCode = 422;
+    throw(error);
+  }
 
+  const imageUrl = req.file.path;
   const title = req.body.title;
   const content = req.body.content;
 
@@ -33,7 +39,7 @@ exports.createPost = (req, res, next) => {
     title: title,
     content: content,
     creator: { name: 'cz' },
-    imageUrl: 'images/murray.jpg'
+    imageUrl: imageUrl
   });
 
   post.save()
