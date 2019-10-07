@@ -94,7 +94,7 @@ exports.deletePost = (req, res, next) => {
     }
     // check logged in user
     clearImage(post.imageUrl);
-    return findByIdAndRemove(postId);
+    return Post.findByIdAndRemove(postId);
   })
   .then(result => {
     res.status(200).json({message: 'Post deleted.'});
