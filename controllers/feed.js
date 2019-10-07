@@ -5,11 +5,21 @@ const Post = require('../models/post');
 
 
 exports.getPosts = (req, res, next) => {
-  Post.find()
+  const currentPage = req.query.page || 1
+  const perPage = 2
+  let totalItems;
+  Post.find().countDocuments()
+    .then(count => {
+      totalItems = count
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage)
+    })
     .then(posts => {
       return res.status(200).json({
         message: 'Fetch posts successfully.',
-        posts: posts
+        posts: posts,
+        totalItems: totalItems
       })
     })
     .catch(err => {
@@ -27,10 +37,10 @@ exports.createPost = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
-  if(!req.file) {
+  if (!req.file) {
     const error = new Error('No image is provided.');
     error.statusCode = 422;
-    throw(error);
+    throw (error);
   }
 
   const imageUrl = req.file.path;
@@ -86,25 +96,25 @@ exports.getPost = (req, res, next) => {
 exports.deletePost = (req, res, next) => {
   const postId = req.params.postId;
   Post.findById(postId)
-  .then(post => {
-    if (!post) {
-      const error = new Error('Post not found.');
-      error.statusCode = 404;
-      throw error;
-    }
-    // check logged in user
-    clearImage(post.imageUrl);
-    return Post.findByIdAndRemove(postId);
-  })
-  .then(result => {
-    res.status(200).json({message: 'Post deleted.'});
-  })
-  .catch(err => {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  })
+    .then(post => {
+      if (!post) {
+        const error = new Error('Post not found.');
+        error.statusCode = 404;
+        throw error;
+      }
+      // check logged in user
+      clearImage(post.imageUrl);
+      return Post.findByIdAndRemove(postId);
+    })
+    .then(result => {
+      res.status(200).json({ message: 'Post deleted.' });
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    })
 }
 
 const clearImage = filePath => {
