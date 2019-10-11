@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const feedRoutes = require('./routes/feed');
+const authRoutes = require('./routes/auth');
 const mongoose = require('mongoose');
 const path = require('path');
 const multer = require('multer');
@@ -38,13 +39,15 @@ app.use((req, res, next) => {
 })
 
 app.use('/feed', feedRoutes);
+app.use('/auth', authRoutes);
 
 // error handler (after all routes)
 app.use((error, req, res, next) => {
   console.log(error);
   const statusCode = error.statusCode || 500;
   const message = error.message;
-  res.status(statusCode).json({ message: message });
+  const data = error.date;
+  res.status(statusCode).json({ message: message, data: data });
 })
 
 mongoose.connect('mongodb+srv://Canxiu:Fyjcax-8betqo-bysvoz@cluster0-s9ho8.mongodb.net/messages?retryWrites=true&w=majority')
