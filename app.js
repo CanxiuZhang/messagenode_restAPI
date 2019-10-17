@@ -50,9 +50,9 @@ app.use((error, req, res, next) => {
   res.status(statusCode).json({ message: message, data: data });
 })
 
-mongoose.connect('mongodb+srv://Canxiu:Fyjcax-8betqo-bysvoz@cluster0-s9ho8.mongodb.net/messages?retryWrites=true&w=majority')
+mongoose.connect(`${process.env.MONGO}`)
   .then(result => {
-    app.listen(8080);
+    app.listen(process.env.PORT || 8080);
   })
   .catch(err => console.log(err))
 
